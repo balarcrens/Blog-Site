@@ -7,7 +7,7 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const process = require("process");
 
-const DOMAIN = "https://www.readora.blog";
+const DOMAIN = "https://readorablog.netlify.app";
 
 const blogDir = path.join(process.cwd(), "src/content/blogs");
 const output = path.join(process.cwd(), "public/sitemap.xml");
@@ -18,6 +18,7 @@ const pages = [
     { url: "/about", priority: "0.6" },
     { url: "/contact", priority: "0.6" },
     { url: "/privacy-policy", priority: "0.4" },
+    { url: "/terms-and-conditions", priority: "0.4" },
 ];
 
 const blogFiles = fg.sync(`${blogDir}/**/*.md`);
