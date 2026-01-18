@@ -1,16 +1,15 @@
 import fs from "fs";
 import path from "path";
-import fg from "fast-glob";
-import matter from "gray-matter";
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
-const process = require("process");
+import process from "process"
 
 const DOMAIN = "https://readorablog.netlify.app";
 
-const blogDir = path.join(process.cwd(), "src/content/blogs");
-const output = path.join(process.cwd(), "public/sitemap.xml");
+const blogs = JSON.parse(
+    fs.readFileSync(
+        path.join(process.cwd(), "src/data/blogs.json"),
+        "utf-8"
+    )
+);
 
 const pages = [
     { url: "/", priority: "1.0" },
@@ -18,20 +17,12 @@ const pages = [
     { url: "/about", priority: "0.6" },
     { url: "/contact", priority: "0.6" },
     { url: "/privacy-policy", priority: "0.4" },
-    { url: "/terms-and-conditions", priority: "0.4" },
 ];
 
-const blogFiles = fg.sync(`${blogDir}/**/*.md`);
-
-const blogUrls = blogFiles.map((file) => {
-    const content = fs.readFileSync(file, "utf8");
-    const { data } = matter(content);
-
-    return {
-        url: `/blog/${data.slug}`,
-        priority: "0.8",
-    };
-});
+const blogUrls = blogs.map((blog) => ({
+    url: `/blog/${blog.slug}`,
+    priority: "0.8",
+}));
 
 const allUrls = [...pages, ...blogUrls];
 
@@ -49,6 +40,9 @@ ${allUrls
         .join("")}
 </urlset>`;
 
-fs.writeFileSync(output, sitemap);
+fs.writeFileSync(
+    path.join(process.cwd(), "public/sitemap.xml"),
+    sitemap
+);
 
-console.log("✅ Sitemap generated successfully");
+console.log("✅ Sitemap generated from blogs.json");
